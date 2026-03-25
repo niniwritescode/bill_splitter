@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Splitter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .input-group i {
+            margin-right: 10px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+        input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            display: none;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 1.3em;
+            color: #667eea;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-utensils"></i> Bill Splitter</h1>
+        <form id="billForm">
+            <div class="input-group">
+                <i class="fas fa-leaf"></i>
+                <input type="number" id="appetizers" placeholder="Appetizers ($)" step="0.01" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-drumstick-bite"></i>
+                <input type="number" id="mainCourses" placeholder="Main Courses ($)" step="0.01" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-ice-cream"></i>
+                <input type="number" id="desserts" placeholder="Desserts ($)" step="0.01" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-glass-cheers"></i>
+                <input type="number" id="drinks" placeholder="Drinks ($)" step="0.01" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-users"></i>
+                <input type="number" id="numFriends" placeholder="Number of Friends" min="1" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-percentage"></i>
+                <input type="number" id="tipPercent" placeholder="Tip Percentage (%)" step="0.01" required>
+            </div>
+            <button type="submit"><i class="fas fa-calculator"></i> Calculate</button>
+        </form>
+        <div class="results" id="results">
+            <div class="result-item">
+                <span>Total Bill:</span>
+                <span id="totalBill">$0.00</span>
+            </div>
+            <div class="result-item">
+                <span>Tip Amount:</span>
+                <span id="tipAmount">$0.00</span>
+            </div>
+            <div class="result-item">
+                <span>Total with Tip:</span>
+                <span id="totalWithTip">$0.00</span>
+            </div>
+            <div class="result-item total">
+                <span>Each Person Pays:</span>
+                <span id="eachPays">$0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('billForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const data = {
+                appetizers: parseFloat(document.getElementById('appetizers').value),
+                mainCourses: parseFloat(document.getElementById('mainCourses').value),
+                desserts: parseFloat(document.getElementById('desserts').value),
+                drinks: parseFloat(document.getElementById('drinks').value),
+                numFriends: parseInt(document.getElementById('numFriends').value),
+                tipPercent: parseFloat(document.getElementById('tipPercent').value)
+            };
+
+            fetch('/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById('totalBill').textContent = '$' + result.totalBill.toFixed(2);
+                document.getElementById('tipAmount').textContent = '$' + result.tipAmount.toFixed(2);
+                document.getElementById('totalWithTip').textContent = '$' + result.totalWithTip.toFixed(2);
+                document.getElementById('eachPays').textContent = '$' + result.eachPays.toFixed(2);
+                document.getElementById('results').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while calculating the bill.');
+            });
+        });
+    </script>
+</body>
+</html>
