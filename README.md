@@ -20,3 +20,9 @@ Built with **Python (Flask)** for the backend and **HTML, CSS, JavaScript** for 
    ```bash
    git clone https://github.com/username/bill-splitter.git
    cd bill-splitter
+
+## 🖼️ Screenshot
+
+Here’s what the UI looks like:
+
+![Bill Splitter UI](images/bill_splitter.png)
